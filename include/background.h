@@ -47,6 +47,14 @@ struct background
 
   //@{
 
+  /** - VP */
+  //We change the free electron fraction relative to its computation by RecFast by some user-specified amount,
+  //within some user-specified redshift bins.
+  double size_z_table_to_change;
+  double * z_table_to_change;
+  double * fractional_change_xe;
+
+
   double H0; /**< \f$ H_0 \f$: Hubble parameter (in fact, [\f$H_0/c\f$]) in \f$ Mpc^{-1} \f$ */
 
   double Omega0_g; /**< \f$ \Omega_{0 \gamma} \f$: photons */

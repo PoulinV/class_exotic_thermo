@@ -3463,7 +3463,7 @@ int thermodynamics_recombination_with_recfast(
   double z,mu_H,Lalpha,Lalpha_He,DeltaB,DeltaB_He;
   double zstart,zend,rhs;
   int i,Nz;
-
+  int ii;
   /* introduced by JL for smoothing the various steps */
   double x0_previous,x0_new,s,weight;
 
@@ -3770,8 +3770,27 @@ int thermodynamics_recombination_with_recfast(
     /* redshift */
     *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_z)=zend;
 
-    /* ionization fraction */
-    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_xe)=x0;
+
+    //added by VP:
+    //We change the free electron fraction relative to its computation by RecFast by some user-specified amount,
+    //within some user-specified redshift bins.
+    for(ii = 0; ii<pba->size_z_table_to_change; ii++){
+      // printf("zend %e looping over table: i %d\n", zend,ii);
+      if(ii == pba->size_z_table_to_change-1){
+        if( zend < pba->z_table_to_change[ii]){
+          x0 *= pba->fractional_change_xe[ii];
+          break;
+        }
+      }else{
+        if(zend > pba->z_table_to_change[ii] && zend < pba->z_table_to_change[ii+1]){
+          // printf("here! zend %e pba->z_table_to_change[ii] %e \n",zend,pba->z_table_to_change[ii]);
+          x0 *= pba->fractional_change_xe[ii];
+          break;
+        }
+      }
+     }
+     /* ionization fraction */
+     *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_xe)=x0;
 
     /* Tb */
     *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_Tb)=y[2];
