@@ -1552,6 +1552,7 @@ int input_read_parameters(
   class_read_int("size_z_table_to_change",pba->size_z_table_to_change);
   if(pba->size_z_table_to_change>0){
     class_read_list_of_doubles("z_table_to_change",pba->z_table_to_change,pba->size_z_table_to_change);
+    class_read_list_of_doubles("sigma_z_table_to_change",pba->sigma_z_table_to_change,pba->size_z_table_to_change);
     class_read_list_of_doubles("fractional_change_xe",pba->fractional_change_xe,pba->size_z_table_to_change);
   }
 

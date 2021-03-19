@@ -52,6 +52,7 @@ struct background
   //within some user-specified redshift bins.
   double size_z_table_to_change;
   double * z_table_to_change;
+  double * sigma_z_table_to_change;
   double * fractional_change_xe;
 
 

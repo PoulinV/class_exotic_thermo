@@ -3141,7 +3141,7 @@ int thermodynamics_recombination_with_hyrec(
   HRATEEFF rate_table;
   TWO_PHOTON_PARAMS twog_params;
   double *xe_output, *Tm_output;
-  int i,j,l,Nz,b;
+  int i,j,l,Nz,b,ii;
   double z, xe, Tm, Hz;
   FILE *fA;
   FILE *fR;
@@ -3357,8 +3357,23 @@ int thermodynamics_recombination_with_hyrec(
     /** - --> store the results in the table */
 
     /* results are obtained in order of decreasing z, and stored in order of growing z */
+    for(ii = 0; ii<pba->size_z_table_to_change; ii++){
 
-    /* redshift */
+      // printf("zend %e looping over table: i %d\n", zend,ii);
+      // if(ii == pba->size_z_table_to_change-1){
+      //   if( zend < pba->z_table_to_change[ii]){
+      //     x0 *= pba->fractional_change_xe[ii];
+      //     break;
+      //   }
+      // }else{
+
+        // if(z >= (pba->z_table_to_change[ii]-3*pba->sigma_z_table_to_change[ii]) && z <= (pba->z_table_to_change[ii]+3*pba->sigma_z_table_to_change[ii])){
+          // printf("here! zend %e pba->z_table_to_change[ii] %e \n",z,pba->z_table_to_change[ii]);
+          xe *= 1+exp(-pow((z-pba->z_table_to_change[ii])/pba->sigma_z_table_to_change[ii],2)/2)*(pba->fractional_change_xe[ii]);
+          // break;
+        // }
+      // }
+     }    /* redshift */
     *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_z)=z;
 
     /* ionization fraction */
@@ -3775,19 +3790,23 @@ int thermodynamics_recombination_with_recfast(
     //We change the free electron fraction relative to its computation by RecFast by some user-specified amount,
     //within some user-specified redshift bins.
     for(ii = 0; ii<pba->size_z_table_to_change; ii++){
+
       // printf("zend %e looping over table: i %d\n", zend,ii);
-      if(ii == pba->size_z_table_to_change-1){
-        if( zend < pba->z_table_to_change[ii]){
-          x0 *= pba->fractional_change_xe[ii];
-          break;
-        }
-      }else{
-        if(zend > pba->z_table_to_change[ii] && zend < pba->z_table_to_change[ii+1]){
-          // printf("here! zend %e pba->z_table_to_change[ii] %e \n",zend,pba->z_table_to_change[ii]);
-          x0 *= pba->fractional_change_xe[ii];
-          break;
-        }
-      }
+      // if(ii == pba->size_z_table_to_change-1){
+      //   if( zend < pba->z_table_to_change[ii]){
+      //     x0 *= pba->fractional_change_xe[ii];
+      //     break;
+      //   }
+      // }else{
+        // if(zend >= pba->z_table_to_change[ii] && zend < pba->z_table_to_change[ii+1]){
+        //   // printf("here! zend %e pba->z_table_to_change[ii] %e \n",zend,pba->z_table_to_change[ii]);
+        //   x0 *= pba->fractional_change_xe[ii];
+        //   break;
+        // }
+      // }
+      x0 *= 1+exp(-pow((zend-pba->z_table_to_change[ii])/pba->sigma_z_table_to_change[ii],2)/2)*(pba->fractional_change_xe[ii]);
+
+
      }
      /* ionization fraction */
      *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_xe)=x0;
