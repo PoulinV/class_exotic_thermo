@@ -344,8 +344,8 @@ int thermodynamics_init(
   }
   else {
     if (pth->thermodynamics_verbose > 0)
-      printf("\n");
-  }
+    printf(" with Y_He=%.4f given by the user\n",pth->YHe);
+}
 
   class_test((pth->YHe < _YHE_SMALL_)||(pth->YHe > _YHE_BIG_),
              pth->error_message,
@@ -3374,6 +3374,14 @@ int thermodynamics_recombination_with_hyrec(
         // }
       // }
      }    /* redshift */
+
+
+     if(z<pba->z_plateau_xe){
+       if(pba->xe_plateau == -1.0)pba->xe_plateau = xe;//we initialise; -1 is the default value
+       else{
+         xe = pba->xe_plateau; //we keep xe constant.
+       }
+     }
     *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_z)=z;
 
     /* ionization fraction */
@@ -3808,6 +3816,15 @@ int thermodynamics_recombination_with_recfast(
 
 
      }
+
+     if(zend<pba->z_plateau_xe){
+       if(pba->xe_plateau == -1.0)pba->xe_plateau = x0;//we initialise; -1 is the default value
+       else{
+         x0 = pba->xe_plateau; //we keep xe constant.
+       }
+     }
+
+
      /* ionization fraction */
      *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_xe)=x0;
 

@@ -1556,6 +1556,12 @@ int input_read_parameters(
     class_read_list_of_doubles("fractional_change_xe",pba->fractional_change_xe,pba->size_z_table_to_change);
   }
 
+
+  class_read_double("z_plateau_xe",pba->z_plateau_xe);
+  if(pba->z_plateau_xe>0){
+    pba->xe_plateau = -1.0; //default value.
+  }
+
   /** - energy injection parameters from CDM annihilation/decay */
 
   class_read_double("annihilation",pth->annihilation);
@@ -3253,6 +3259,8 @@ int input_default_params(
 
   pth->annihilation = 0.;
   pth->decay = 0.;
+  pba->z_plateau_xe = 0;
+  pba->xe_plateau = -1;
   pba->size_z_table_to_change = 0;
   pth->annihilation_variation = 0.;
   pth->annihilation_z = 1000.;

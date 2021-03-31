@@ -55,6 +55,9 @@ struct background
   double * sigma_z_table_to_change;
   double * fractional_change_xe;
 
+  double xe_plateau;
+  double z_plateau_xe;
+
 
   double H0; /**< \f$ H_0 \f$: Hubble parameter (in fact, [\f$H_0/c\f$]) in \f$ Mpc^{-1} \f$ */
 
