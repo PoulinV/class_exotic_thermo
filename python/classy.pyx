@@ -1676,6 +1676,8 @@ cdef class Class:
                 value = self.ba.age
             elif name == 'conformal_age':
                 value = self.ba.conformal_age
+            elif name == 'xe_plateau':
+                value = self.ba.xe_plateau
             elif name == 'm_ncdm_in_eV':
                 value = self.ba.m_ncdm_in_eV[0]
             elif name == 'm_ncdm_tot':
