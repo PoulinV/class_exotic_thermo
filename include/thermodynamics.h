@@ -117,6 +117,9 @@ struct thermo
 
   double * reio_inter_xe; /**< discrete \f$ X_e(z)\f$ values */
 
+  double fractional_change_Nnow; /**< change to Nnow (relative to standard value) */
+
+
   /** parameters for energy injection */
 
   double annihilation; /**< parameter describing CDM annihilation (f <sigma*v> / m_cdm, see e.g. 0905.0003) */

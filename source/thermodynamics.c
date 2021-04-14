@@ -3490,6 +3490,7 @@ int thermodynamics_recombination_with_recfast(
   /* introduced by JL for smoothing the various steps */
   double x0_previous,x0_new,s,weight;
 
+
   /* contains all quantities relevant for the integration algorithm */
   struct generic_integrator_workspace gi;
 
@@ -3499,6 +3500,47 @@ int thermodynamics_recombination_with_recfast(
   /** - allocate memory for thermodynamics interpolation tables (size known in advance) */
   preco->rt_size = ppr->recfast_Nz0;
   class_alloc(preco->recombination_table,preco->re_size*preco->rt_size*sizeof(double),pth->error_message);
+
+  // //VP: uncomment to read file
+  // double * dummy_table_z, * dummy_table_xe;
+  // int array_line;
+  // FILE * dummy_file;
+  // char line[_LINE_LENGTH_MAX_];
+  // char * left;
+  // class_alloc(dummy_table_z,ppr->recfast_Nz0*sizeof(double),pth->error_message);
+  // class_alloc(dummy_table_xe,ppr->recfast_Nz0*sizeof(double),pth->error_message);
+  // class_open(dummy_file,"YHe0p2_ne.dat", "r",pth->error_message);
+  //
+  // array_line=0;
+  //
+  // while (fgets(line,_LINE_LENGTH_MAX_-1,dummy_file) != NULL) {
+  //   /* eliminate blank spaces at beginning of line */
+  //   left=line;
+  //   while (left[0]==' ') {
+  //     left++;
+  //   }
+  //
+  //   /* check that the line is neither blank nor a comment. In
+  //      ASCII, left[0]>39 means that first non-blank charachter might
+  //      be the beginning of some data (it is not a newline, a #, a %,
+  //      etc.) */
+  //   if (left[0] > 39) {
+  //     class_test(sscanf(line,"%lg %lg",
+  //                       &(dummy_table_z[array_line]),
+  //                       &(dummy_table_xe[array_line]))!= 2,
+  //                pth->error_message,
+  //                "could not read value of parameters coefficients in file %s\n","YHe0p2_ne.dat");
+  //
+  //     // printf("read %e %e\n",dummy_table_z[array_line],dummy_table_xe[array_line]);
+  //
+  //      array_line ++;
+  //   }
+  //
+  //
+  //
+  // }
+  // fclose(dummy_file);
+
 
   /** - initialize generic integrator with initialize_generic_integrator() */
   class_call(initialize_generic_integrator(_RECFAST_INTEG_SIZE_, &gi),
@@ -3543,11 +3585,25 @@ int thermodynamics_recombination_with_recfast(
 
   /* related quantities */
   z=zinitial;
+
+
+
+
+  // mu_H = 1./(1.-0.2);
+  //mu_T = _not4_ /(_not4_ - (_not4_-1.)*0.2); /* recfast 1.4*/
+  // preco->fHe = 0.2/(_not4_ *(1.-0.2)); /* recfast 1.4 */
   mu_H = 1./(1.-preco->YHe);
-  //mu_T = _not4_ /(_not4_ - (_not4_-1.)*preco->YHe); /* recfast 1.4*/
+  // printf("_m_H_ %e muH(0.2) %e\n", mu_H,1/(1-0.2));
+  // //mu_T = _not4_ /(_not4_ - (_not4_-1.)*preco->YHe); /* recfast 1.4*/
   preco->fHe = preco->YHe/(_not4_ *(1.-preco->YHe)); /* recfast 1.4 */
-  preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_);
+  // preco->fHe = 0.2/(_not4_ *(1.-0.2)); /* recfast 1.4 */
+  preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_)*pth->fractional_change_Nnow;
+  // preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_)*(mu_H/(1/(1-0.2)));
+  // preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_);
+  // preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_)*1.056;
+  // pr
   pth->n_e = preco->Nnow;
+  // exit(0);
 
   /* energy injection parameters */
   preco->annihilation = pth->annihilation;
@@ -3817,12 +3873,19 @@ int thermodynamics_recombination_with_recfast(
 
      }
 
+
+
      if(zend<pba->z_plateau_xe){
        if(pba->xe_plateau == -1.0)pba->xe_plateau = x0;//we initialise; -1 is the default value
        else{
          x0 = pba->xe_plateau; //we keep xe constant.
        }
      }
+     //
+     // if(zend==dummy_table_z[i]){
+     //   printf("works xe %e %e\n", x0,dummy_table_xe[i]);
+     //   x0 = dummy_table_xe[i];
+     // }
 
 
      /* ionization fraction */
@@ -3848,17 +3911,23 @@ int thermodynamics_recombination_with_recfast(
     /* dkappa/dtau = a n_e x_e sigma_T = a^{-2} n_e(today) x_e sigma_T (in units of 1/Mpc) */
     *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_dkappadtau)
       = (1.+zend) * (1.+zend) * preco->Nnow * x0 * _sigma_ * _Mpc_over_m_;
+      // = (1.+zend) * (1.+zend) * dummy_table_xe[i] * _sigma_ * _Mpc_over_m_;
 
-    /* fprintf(stdout,"%e %e %e %e %e %e\n", */
-    /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_z), */
-    /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_xe), */
-    /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_Tb), */
-    /* 	    (1.+zend) * dy[2], */
-    /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_cb2), */
-    /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_dkappadtau) */
-    /* 	    ); */
+      // fprintf(stdout,"%e %e \n",
+      //    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_z),
+      //     preco->Nnow * x0);
+    // /* fprintf(stdout,"%e %e %e %e %e %e\n", */
+    // /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_z), */
+    // /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_xe), */
+    // /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_Tb), */
+    // /* 	    (1.+zend) * dy[2], */
+    // /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_cb2), */
+    // /* 	    *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_dkappadtau) */
+    // /* 	    ); */
 
   }
+
+  // exit(0);
 
   /** - cleanup generic integrator with cleanup_generic_integrator() */
 
