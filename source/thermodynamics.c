@@ -3597,7 +3597,7 @@ int thermodynamics_recombination_with_recfast(
   // //mu_T = _not4_ /(_not4_ - (_not4_-1.)*preco->YHe); /* recfast 1.4*/
   preco->fHe = preco->YHe/(_not4_ *(1.-preco->YHe)); /* recfast 1.4 */
   // preco->fHe = 0.2/(_not4_ *(1.-0.2)); /* recfast 1.4 */
-  preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_)*pth->fractional_change_Nnow;
+  preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_);
   // preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_)*(mu_H/(1/(1-0.2)));
   // preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_);
   // preco->Nnow = 3.*preco->H0*preco->H0*OmegaB/(8.*_PI_*_G_*mu_H*_m_H_)*1.056;
@@ -3910,7 +3910,7 @@ int thermodynamics_recombination_with_recfast(
 
     /* dkappa/dtau = a n_e x_e sigma_T = a^{-2} n_e(today) x_e sigma_T (in units of 1/Mpc) */
     *(preco->recombination_table+(Nz-i-1)*preco->re_size+preco->index_re_dkappadtau)
-      = (1.+zend) * (1.+zend) * preco->Nnow * x0 * _sigma_ * _Mpc_over_m_;
+      = (1.+zend) * (1.+zend) * preco->Nnow * x0 * _sigma_ * _Mpc_over_m_*pth->fractional_change_Nnow;
       // = (1.+zend) * (1.+zend) * dummy_table_xe[i] * _sigma_ * _Mpc_over_m_;
 
       // fprintf(stdout,"%e %e \n",
@@ -4016,7 +4016,7 @@ int thermodynamics_derivs_with_recfast(
   Tmat = y[2];
 
   n = preco->Nnow * (1.+z) * (1.+z) * (1.+z);
-  n_He = preco->fHe * n;
+  n_He = preco->fHe * n ;
   Trad = preco->Tnow * (1.+z);
 
   class_call(background_tau_of_z(pba,
@@ -4154,7 +4154,7 @@ int thermodynamics_derivs_with_recfast(
     // JL: test for debugginf reio_inter
     //fprintf(stdout,"%e  %e  %e  %e\n",z,Tmat,K*_Lambda_*n,K*Rup*n);
 
-    dy[0] = (x*x_H*n*Rdown - Rup*(1.-x_H)*exp(-preco->CL/Tmat)) * C / (Hz*(1.+z))       /* Peeble's equation with fudged factors */
+    dy[0] = (x*x_H*n* Rdown - Rup*(1.-x_H)*exp(-preco->CL/Tmat)) * C * pba->fractional_change_Peebles/ (Hz*(1.+z))       /* Peeble's equation with fudged factors */
       -energy_rate*chi_ion_H/n*(1./_L_H_ion_+(1.-C)/_L_H_alpha_)/(_h_P_*_c_*Hz*(1.+z)); /* energy injection (neglect fraction going to helium) */
 
   }

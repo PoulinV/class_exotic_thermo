@@ -1458,6 +1458,7 @@ int input_read_parameters(
   }
 
   class_read_double("fractional_change_Nnow",pth->fractional_change_Nnow);
+  class_read_double("fractional_change_Peebles",pba->fractional_change_Peebles);
   /** - reionization parametrization */
   class_call(parser_read_string(pfc,"reio_parametrization",&string1,&flag1,errmsg),
              errmsg,
@@ -3244,6 +3245,7 @@ int input_default_params(
 
   pth->YHe=_BBN_;
   pth->fractional_change_Nnow=1.0;//default is no change
+  pba->fractional_change_Peebles=1.0;//default is no change
   pth->recombination=recfast;
   pth->reio_parametrization=reio_camb;
   pth->reio_z_or_tau=reio_z;

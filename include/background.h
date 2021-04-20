@@ -57,6 +57,7 @@ struct background
 
   double xe_plateau;
   double z_plateau_xe;
+  double fractional_change_Peebles; /**< change to Peebles C coefficient (relative to standard value) */
 
 
   double H0; /**< \f$ H_0 \f$: Hubble parameter (in fact, [\f$H_0/c\f$]) in \f$ Mpc^{-1} \f$ */
