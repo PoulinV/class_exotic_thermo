@@ -1459,6 +1459,13 @@ int input_read_parameters(
 
   class_read_double("fractional_change_Nnow",pth->fractional_change_Nnow);
   class_read_double("fractional_change_Peebles",pba->fractional_change_Peebles);
+  class_read_double("fractional_change_Rup",pba->fractional_change_Rup);
+  class_read_double("fractional_change_Rdown",pba->fractional_change_Rdown);
+  class_read_double("fractional_change_Lambda",pba->fractional_change_Lambda);
+  class_read_double("fractional_change_Lalpha",pba->fractional_change_Lalpha);
+  class_read_double("fractional_change_K",pba->fractional_change_K);
+  class_read_double("fractional_change_fu",pba->fractional_change_fu);
+  class_read_double("fractional_change_CL",pba->fractional_change_CL);
   /** - reionization parametrization */
   class_call(parser_read_string(pfc,"reio_parametrization",&string1,&flag1,errmsg),
              errmsg,
@@ -3246,6 +3253,14 @@ int input_default_params(
   pth->YHe=_BBN_;
   pth->fractional_change_Nnow=1.0;//default is no change
   pba->fractional_change_Peebles=1.0;//default is no change
+  pba->fractional_change_Lalpha=1.0;//default is no change
+  pba->fractional_change_Lambda=1.0;//default is no change
+  pba->fractional_change_CL=1.0;//default is no change
+  pba->fractional_change_fu=1.0;//default is no change
+  pba->fractional_change_K=1.0;//default is no change
+  pba->fractional_change_Rup=1.0;//default is no change
+  pba->fractional_change_Rdown=1.0;//default is no change
+
   pth->recombination=recfast;
   pth->reio_parametrization=reio_camb;
   pth->reio_z_or_tau=reio_z;

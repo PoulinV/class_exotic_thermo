@@ -3619,6 +3619,9 @@ int thermodynamics_recombination_with_recfast(
   /* quantities related to constants defined in thermodynamics.h */
   //n = preco->Nnow * pow((1.+z),3);
   Lalpha = 1./_L_H_alpha_;
+  /** VP: add rescaling for exotic recombination */
+  Lalpha *= pba->fractional_change_Lalpha;
+
   Lalpha_He = 1./_L_He_2p_;
   DeltaB = _h_P_*_c_*(_L_H_ion_-_L_H_alpha_);
   preco->CDB = DeltaB/_k_B_;
@@ -3643,6 +3646,13 @@ int thermodynamics_recombination_with_recfast(
   tpaw.preco = preco;
   tpaw.pvecback = pvecback;
 
+
+
+
+  /** VP: add rescaling for exotic recombination */
+
+  preco->CL *= pba->fractional_change_CL;
+  preco->fu *= pba->fractional_change_fu;
   /** - impose initial conditions at early times */
 
   class_test(zinitial < ppr->recfast_z_He_3,
@@ -4057,6 +4067,10 @@ int thermodynamics_derivs_with_recfast(
       + ppr->recfast_AGauss1*exp(-pow((log(1.+z)-ppr->recfast_zGauss1)/ppr->recfast_wGauss1,2))
       + ppr->recfast_AGauss2*exp(-pow((log(1.+z)-ppr->recfast_zGauss2)/ppr->recfast_wGauss2,2));
 
+  /** VP: add rescaling for exotic recombination */
+  K *= pba->fractional_change_K;
+  Rdown *= pba->fractional_change_Rdown;
+  Rup *= pba->fractional_change_Rup;
   /* end of new recfast 1.5 piece */
 
   /* following is from recfast 1.4 */
@@ -4129,10 +4143,11 @@ int thermodynamics_derivs_with_recfast(
     /* Peebles' coefficient (approximated as one when the Hydrogen
        ionization fraction is very close to one) */
     if (x_H < ppr->recfast_x_H0_trigger2) {
-      C = (1. + K*_Lambda_*n*(1.-x_H))/(1./preco->fu+K*_Lambda_*n*(1.-x_H)/preco->fu +K*Rup*n*(1.-x_H));
+      C = (1. + K*_Lambda_*pba->fractional_change_Lambda*n*(1.-x_H))/(1./preco->fu+K*_Lambda_*pba->fractional_change_Lambda*n*(1.-x_H)/preco->fu +K*Rup*n*(1.-x_H));
+      C *= pba->fractional_change_Peebles;
     }
     else {
-      C = 1.;
+      C = 1. * pba->fractional_change_Peebles;
     }
 
     /* For DM annihilation: fraction of injected energy going into
@@ -4154,7 +4169,7 @@ int thermodynamics_derivs_with_recfast(
     // JL: test for debugginf reio_inter
     //fprintf(stdout,"%e  %e  %e  %e\n",z,Tmat,K*_Lambda_*n,K*Rup*n);
 
-    dy[0] = (x*x_H*n* Rdown - Rup*(1.-x_H)*exp(-preco->CL/Tmat)) * C * pba->fractional_change_Peebles/ (Hz*(1.+z))       /* Peeble's equation with fudged factors */
+    dy[0] = (x*x_H*n* Rdown - Rup*(1.-x_H)*exp(-preco->CL/Tmat)) * C/ (Hz*(1.+z))       /* Peeble's equation with fudged factors */
       -energy_rate*chi_ion_H/n*(1./_L_H_ion_+(1.-C)/_L_H_alpha_)/(_h_P_*_c_*Hz*(1.+z)); /* energy injection (neglect fraction going to helium) */
 
   }
